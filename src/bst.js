@@ -56,12 +56,55 @@ export default class Tree {
     }
 
     if (value < root.data) {
-      // Use 'root.data' instead of 'root.key'
       root.left = this.insert(root.left, value);
     } else if (value > root.data) {
       root.right = this.insert(root.right, value);
     }
 
     return root;
+  }
+
+  getSuccessor(current) {
+    let successor = current.right;
+    while (successor !== null && successor.left !== null) {
+      successor = successor.left;
+    }
+    return successor;
+  }
+
+  delete(root, value) {
+    // Base case
+    if (root === null) {
+      return root;
+    }
+
+    // If data to be searched is in a subtree
+    if (root.data > value) {
+      root.left = this.delete(root.left, value);
+    } else if (root.data < value) {
+      root.right = this.delete(root.right, value);
+    } else {
+      // If root matches with the given data
+
+      // Cases when root has 0 children or
+      // only right child
+      if (root.left === null) return root.right;
+
+      // When root has only left child
+      if (root.right === null) return root.left;
+
+      // When both children are present
+      const successor = this.getSuccessor(root);
+      root.data = successor.data;
+      root.right = this.delete(root.right, successor.data);
+    }
+    return root;
+  }
+
+  find(root, value) {
+    if (root === null) return false;
+    if (root.data === value) return true;
+    if (value < root.data) return this.find(root.left, value);
+    return this.find(root.right, value);
   }
 }

@@ -27,9 +27,17 @@ prettyPrint(tree.root);
 console.log("Pre-order traversal:");
 tree.preOrder(tree.root);
 
-// Insert a new key into the tree
-tree.root = tree.insert(tree.root, 10); // Insert key 10 into the tree
-
-// Print the pretty-printed balanced search tree after insertion
+// Print the balanced search tree after insertion
+tree.root = tree.insert(tree.root, 10);
 console.log("After inserting 10:");
 prettyPrint(tree.root);
+
+// Print the balanced search tree after deletion
+tree.root = tree.delete(tree.root, 2);
+tree.root = tree.delete(tree.root, 5);
+console.log("After deleting 2 and 5:");
+prettyPrint(tree.root);
+
+// Find a value in the tree
+console.log("Is 5 in the tree?", tree.find(tree.root, 5));
+console.log("Is 6 in the tree?", tree.find(tree.root, 10));
