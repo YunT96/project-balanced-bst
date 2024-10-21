@@ -29,27 +29,6 @@ export default class Tree {
     return this.sortedArrayToBSTRecur(this.arr, 0, this.arr.length - 1);
   }
 
-  preOrder(root) {
-    if (root === null) return;
-    console.log(root.data);
-    this.preOrder(root.left);
-    this.preOrder(root.right);
-  }
-
-  inOrder(root) {
-    if (root === null) return;
-    this.inOrder(root.left);
-    console.log(root.data);
-    this.inOrder(root.right);
-  }
-
-  postOrder(root) {
-    if (root === null) return;
-    this.postOrder(root.left);
-    this.postOrder(root.right);
-    console.log(root.data);
-  }
-
   insert(root, value) {
     if (root === null) {
       return new Node(value);
@@ -106,5 +85,108 @@ export default class Tree {
     if (root.data === value) return true;
     if (value < root.data) return this.find(root.left, value);
     return this.find(root.right, value);
+  }
+
+  levelOrder(callback) {
+    if (callback === undefined) {
+      throw new Error("Callback is required");
+    }
+    const queue = [];
+    queue.push(this.root);
+    while (queue.length > 0) {
+      const node = queue.shift();
+      callback(node);
+      if (node.left !== null) queue.push(node.left);
+      if (node.right !== null) queue.push(node.right);
+    }
+  }
+
+  inOrder(callback) {
+    if (callback === undefined) {
+      throw new Error("Callback is required");
+    }
+    const queue = [];
+    let current = this.root;
+    while (current !== null || queue.length > 0) {
+      while (current !== null) {
+        queue.push(current);
+        current = current.left;
+      }
+      current = queue.pop();
+      callback(current);
+      current = current.right;
+    }
+  }
+
+  preOrder(callback) {
+    if (callback === undefined) {
+      throw new Error("Callback is required");
+    }
+    const queue = [];
+    let current = this.root;
+    while (current !== null || queue.length > 0) {
+      while (current !== null) {
+        callback(current);
+        queue.push(current);
+        current = current.left;
+      }
+      current = queue.pop();
+      current = current.right;
+    }
+  }
+
+  postOrder(callback) {
+    if (callback === undefined) {
+      throw new Error("Callback is required");
+    }
+    const queue = [];
+    let current = this.root;
+    while (current !== null || queue.length > 0) {
+      while (current !== null) {
+        queue.push(current);
+        current = current.left;
+      }
+      current = queue.pop();
+      callback(current);
+      current = current.right;
+    }
+  }
+
+  height(root) {
+    if (root === null) return -1;
+    return Math.max(this.height(root.left), this.height(root.right)) + 1;
+  }
+
+  depth(root, value) {
+    if (root === null) return -1;
+    if (root.data === value) return 0;
+    if (value < root.data) return this.depth(root.left, value) + 1;
+    return this.depth(root.right, value) + 1;
+  }
+
+  isBalanced(root) {
+    // Helper function to check balance and height in one go
+    const checkBalance = (node) => {
+      if (node === null) return { height: 0, balanced: true };
+
+      const left = checkBalance(node.left);
+      const right = checkBalance(node.right);
+
+      const balanced =
+        left.balanced &&
+        right.balanced &&
+        Math.abs(left.height - right.height) <= 1;
+      const height = Math.max(left.height, right.height) + 1;
+
+      return { height, balanced };
+    };
+
+    return checkBalance(root).balanced;
+  }
+
+  rebalance() {
+    const inOrderArray = [];
+    this.inOrder((node) => inOrderArray.push(node.data));
+    this.root = this.sortedArrayToBST(inOrderArray);
   }
 }
